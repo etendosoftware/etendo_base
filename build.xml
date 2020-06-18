@@ -1,0 +1,9 @@
+<project>
+    <property name="dummy" value="Before run this task you nedd to expand core with ./gradlew expandCore" />
+    <target name="setup">
+        <fail>${dummy}</fail>
+    </target>
+    <target name="install.source">
+        <fail>${dummy}</fail>
+    </target>
+</project>

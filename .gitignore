@@ -1,3 +1,7 @@
 *
 !.gitignore
 !build.gradle
+!gradle
+!gradlew
+!gradlew.bat
+!build.xml

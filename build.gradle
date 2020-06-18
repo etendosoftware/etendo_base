@@ -50,10 +50,9 @@ task expandCore(type: Copy) {
     into extractDir
 }
 
-/** Expand the modules from the dependencies */
+/** Expand modules from the dependencies */
 task expandModules(type: Copy) {
     def extractDir = "${project.projectDir}/modules"
-    dependsOn expandCore
     dependsOn configurations.moduleDeps
     from { 
         configurations.moduleDeps.collect { 
@@ -62,7 +61,12 @@ task expandModules(type: Copy) {
     }
     into extractDir
 }
-
+/** Expand core and modules from the dependencies */
+task expand{
+    dependsOn expandCore
+    dependsOn expandModules
+    tasks.findByName('expandCore').mustRunAfter 'expandModules'
+}
 
 /** Call ant setup to prepare enviroment */
 task setup {

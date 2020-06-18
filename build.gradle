@@ -21,10 +21,10 @@ ant.importBuild('build.xml') { String oldTargetName ->
 repositories {
     jcenter()
     maven {
-          url "http://repo.futit.cloud:8081/repository/maven-releases"
+        url "http://repo.futit.cloud:8081/repository/maven-releases"
     }
     maven {
-          url "http://localhost:8081/repository/obclassic"
+        url "http://localhost:8081/repository/obclassic"
     }
 }
 
@@ -34,8 +34,8 @@ configurations {
 }
 
 dependencies {
-    coreDep 'com.smf.classic.core:ob:19.3.4.36257@zip'	
-    moduleDeps 'com.smf:securewebservices:1.0.1@zip'	
+    coreDep 'com.smf.classic.core:ob:19.3.4.36257@zip'
+    moduleDeps 'com.smf:securewebservices:1.0.1@zip'
 }
 
 /** Expand the core from the dependency */
@@ -43,8 +43,8 @@ task expandCore(type: Copy) {
     def extractDir = "${project.projectDir}"
 
     dependsOn configurations.coreDep
-    from { 
-        configurations.coreDep.collect { 
+    from {
+        configurations.coreDep.collect {
             zipTree(it)
         }
     }
@@ -55,8 +55,8 @@ task expandCore(type: Copy) {
 task expandModules(type: Copy) {
     def extractDir = "${project.projectDir}/modules"
     dependsOn configurations.moduleDeps
-    from { 
-        configurations.moduleDeps.collect { 
+    from {
+        configurations.moduleDeps.collect {
             zipTree(it)
         }
     }
@@ -69,10 +69,32 @@ task expand{
     tasks.findByName('expandModules').mustRunAfter 'expandCore'
 }
 
+
+task prepareConfig(type: Copy){
+    from file("config/Openbravo.properties.template")
+    into file("config")
+    rename { String fileName ->
+        fileName.replace("Openbravo.properties.template", "Openbravo.properties")
+    }
+}
+
+
 /** Call ant setup to prepare enviroment */
 task setup {
-    ant.properties['nonInteractive'] = true;
-    ant.properties['acceptLicense'] = true;   
+    dependsOn prepareConfig
+
+    doFirst{
+        ant.propertyfile(file: "config/Openbravo.properties") {
+            entry( key: "bbdd.sid", value: findProperty("bbdd.sid"))
+            entry( key: "bbdd.url", value: "jdbc:postgresql://localhost\\:"+findProperty("bbdd.port"))
+            entry( key: "bbdd.systemUser", value: findProperty("bbdd.systemUser"))
+            entry( key: "bbdd.systemPassword", value: findProperty("bbdd.systemPassword"))
+            entry( key: "bbdd.user", value: findProperty("bbdd.user"))
+            entry( key: "bbdd.password", value: findProperty("bbdd.password"))
+        }
+    }
+    ant.properties['nonInteractive'] = true
+    ant.properties['acceptLicense'] = true
     finalizedBy antSetup
 }
 

@@ -12,7 +12,7 @@ ant.importBuild('build.xml') { String oldTargetName ->
         case 'init':
             return 'antInit'
         case 'install.source':
-            return 'install'
+            return 'antInstall'
         default:
             return oldTargetName
     }
@@ -41,6 +41,7 @@ dependencies {
 /** Expand the core from the dependency */
 task expandCore(type: Copy) {
     def extractDir = "${project.projectDir}"
+
     dependsOn configurations.coreDep
     from { 
         configurations.coreDep.collect { 
@@ -65,7 +66,7 @@ task expandModules(type: Copy) {
 task expand{
     dependsOn expandCore
     dependsOn expandModules
-    tasks.findByName('expandCore').mustRunAfter 'expandModules'
+    tasks.findByName('expandModules').mustRunAfter 'expandCore'
 }
 
 /** Call ant setup to prepare enviroment */
@@ -76,5 +77,7 @@ task setup {
 }
 
 /** The install.source ant task now depends on ant setup */
-
-install.dependsOn setup
+task install{
+    dependsOn setup
+    finalizedBy antInstall
+}

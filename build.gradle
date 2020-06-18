@@ -11,6 +11,8 @@ ant.importBuild('build.xml') { String oldTargetName ->
             return 'antSetup'
         case 'init':
             return 'antInit'
+        case 'install.source':
+            return 'install'
         default:
             return oldTargetName
     }
@@ -36,38 +38,30 @@ dependencies {
     moduleDeps 'com.smf:securewebservices:1.0.1@zip'	
 }
 
-task importBuild {
-   
-}
 /** Expand the core from the dependency */
 task expandCore(type: Copy) {
-    doLast{
-        def extractDir = "${project.projectDir}"
-        dependsOn configurations.coreDep
-        from { 
-            configurations.coreDep.collect { 
-                zipTree(it)
-            }
+    def extractDir = "${project.projectDir}"
+    dependsOn configurations.coreDep
+    from { 
+        configurations.coreDep.collect { 
+            zipTree(it)
         }
-        into extractDir
     }
+    into extractDir
 }
 
 /** Expand the modules from the dependencies */
 task expandModules(type: Copy) {
-    doLast{
-        def extractDir = "${project.projectDir}/modules"
-        dependsOn expandCore
-        dependsOn configurations.moduleDeps
-        from { 
-            configurations.moduleDeps.collect { 
-                zipTree(it)
-            }
+    def extractDir = "${project.projectDir}/modules"
+    dependsOn expandCore
+    dependsOn configurations.moduleDeps
+    from { 
+        configurations.moduleDeps.collect { 
+            zipTree(it)
         }
-        into extractDir
     }
+    into extractDir
 }
-
 
 
 /** Call ant setup to prepare enviroment */
@@ -77,7 +71,6 @@ task setup {
     finalizedBy antSetup
 }
 
-task install {
-    dependsOn setup
-    finalizedBy 'install.source'
-}
+/** The install.source ant task now depends on ant setup */
+
+install.dependsOn setup

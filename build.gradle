@@ -21,7 +21,7 @@ ant.importBuild('build.xml') { String oldTargetName ->
 repositories {
     jcenter()
     maven {
-        url "http://repo.futit.cloud:8081/repository/maven-releases"
+        url "https://repo.futit.cloud/repository/maven-releases"
     }
     maven {
         url "http://localhost:8081/repository/obclassic"

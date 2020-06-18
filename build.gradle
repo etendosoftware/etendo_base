@@ -86,7 +86,7 @@ task setup {
     doFirst{
         ant.propertyfile(file: "config/Openbravo.properties") {
             entry( key: "bbdd.sid", value: findProperty("bbdd.sid"))
-            entry( key: "bbdd.url", value: "jdbc:postgresql://localhost\\:"+findProperty("bbdd.port"))
+            entry( key: "bbdd.url", value: "jdbc:postgresql://localhost:"+findProperty("bbdd.port"))
             entry( key: "bbdd.systemUser", value: findProperty("bbdd.systemUser"))
             entry( key: "bbdd.systemPassword", value: findProperty("bbdd.systemPassword"))
             entry( key: "bbdd.user", value: findProperty("bbdd.user"))

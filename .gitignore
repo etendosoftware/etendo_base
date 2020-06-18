@@ -4,6 +4,5 @@
 !gradle
 !gradlew
 !gradlew.bat
-!build.xml
 !gradle/**
 !gradle.properties

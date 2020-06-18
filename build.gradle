@@ -62,27 +62,16 @@ task expandModules(type: Copy) {
     }
     into extractDir
 }
-/** Expand core and modules from the dependencies */
-task expand{
-    dependsOn expandCore
-    dependsOn expandModules
-    tasks.findByName('expandModules').mustRunAfter 'expandCore'
-}
 
 
+
+/** Copy Openbravo.properties template and set values */
 task prepareConfig(type: Copy){
     from file("config/Openbravo.properties.template")
     into file("config")
     rename { String fileName ->
         fileName.replace("Openbravo.properties.template", "Openbravo.properties")
     }
-}
-
-
-/** Call ant setup to prepare enviroment */
-task setup {
-    dependsOn prepareConfig
-
     doFirst{
         ant.propertyfile(file: "config/Openbravo.properties") {
             entry( key: "bbdd.sid", value: findProperty("bbdd.sid"))
@@ -93,6 +82,18 @@ task setup {
             entry( key: "bbdd.password", value: findProperty("bbdd.password"))
         }
     }
+}
+
+/** Expand core and modules from the dependencies and set properties */
+task expand{
+    dependsOn expandCore
+    dependsOn expandModules
+    tasks.findByName('expandModules').mustRunAfter 'expandCore'
+    finalizedBy prepareConfig
+}
+
+/** Call ant setup to prepare enviroment */
+task setup {
     ant.properties['nonInteractive'] = true
     ant.properties['acceptLicense'] = true
     finalizedBy antSetup

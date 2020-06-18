@@ -1,0 +1,83 @@
+plugins {
+    id 'maven-publish'
+    id 'java'
+}
+
+repositories {
+    jcenter()
+    maven {
+          url "http://repo.futit.cloud:8081/repository/maven-releases"
+    }
+    maven {
+          url "http://localhost:8081/repository/obclassic"
+    }
+}
+
+configurations {
+    coreDep
+    moduleDeps
+}
+
+dependencies {
+    coreDep 'com.smf.classic.core:ob:19.3.4.36257@zip'	
+    moduleDeps 'com.smf:securewebservices:1.0.1@zip'	
+}
+
+/** Expand the core from the dependency */
+task expandCore(type: Copy) {
+    def extractDir = "${project.projectDir}"
+    dependsOn configurations.coreDep
+    from { 
+        configurations.coreDep.collect { 
+            zipTree(it)
+        }
+    }
+    into extractDir
+}
+
+/** Expand the modules from the dependencies */
+task expandModules(type: Copy) {
+    def extractDir = "${project.projectDir}/modules"
+    dependsOn expandCore
+    dependsOn configurations.moduleDeps
+    from { 
+        configurations.moduleDeps.collect { 
+            zipTree(it)
+        }
+    }
+    into extractDir
+}
+
+task initAnt {
+    doLast{
+        ant.importBuild('build.xml') { String oldTargetName ->
+            switch (oldTargetName) {
+                case 'clean':
+                    return 'antClean'
+                case 'setup':
+                    return 'antSetup'
+                default:
+                    return oldTargetName
+            }
+        }
+    }
+}
+
+
+/** Call ant setup to prepare enviroment */
+task setup {
+    doLast{
+        dependsOn initAnt
+        finalizedBy antSetup
+        ant.properties['nonInteractive'] = true;
+        ant.properties['acceptLicense'] = true;   
+    }
+}
+
+task install {
+
+    dependsOn
+    doLast{
+        ant.print("test")
+    }
+}

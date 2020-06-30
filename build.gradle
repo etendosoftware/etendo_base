@@ -23,9 +23,9 @@ repositories {
     maven {
         url "https://repo.futit.cloud/repository/maven-releases"
     }
-    maven {
+    /*maven {
         url "http://localhost:8081/repository/obclassic"
-    }
+    }*/
 }
 
 configurations {
@@ -34,8 +34,8 @@ configurations {
 }
 
 dependencies {
-    coreDep 'com.smf.classic.core:ob:19.3.4.36257@zip'
-    moduleDeps 'com.smf:securewebservices:1.0.1@zip'
+    coreDep 'com.smf.classic.core:ob:[20.1.2,)@zip'
+    //moduleDeps 'com.smf:securewebservices:1.0.1@zip'
 }
 
 /** Expand the core from the dependency */

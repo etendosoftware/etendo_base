@@ -2,6 +2,35 @@ plugins {
     id 'maven-publish'
     id 'java'
 }
+sourceSets{
+    main{
+        java{
+            srcDirs 'build/javasqlc/src'
+            srcDirs 'build/javasqlc/srcAD'
+            srcDirs 'src'
+            srcDirs 'src-gen'
+            srcDirs 'srcAD'
+        }
+    }
+}
+
+configurations {
+    coreDep
+    moduleDeps
+}
+
+dependencies {
+    coreDep 'com.smf.classic.core:ob:[20.1.2,)@zip'
+    implementation fileTree(project.projectDir) {
+        include "**/lib/**/*.jar"
+        exclude "\${env.CATALINA_HOME}"
+        exclude "WebContent"
+    }
+}
+file('modules').eachDir {
+    sourceSets.main.java.srcDirs += it.toString()+"/src"
+}
+
 
 ant.importBuild('build.xml') { String oldTargetName ->
     switch (oldTargetName) {
@@ -28,15 +57,7 @@ repositories {
     }
 }
 
-configurations {
-    coreDep
-    moduleDeps
-}
 
-dependencies {
-    coreDep 'com.smf.classic.core:ob:19.3.4.36257@zip'
-    moduleDeps 'com.smf:securewebservices:1.0.1@zip'
-}
 
 /** Expand the core from the dependency */
 task expandCore(type: Copy) {

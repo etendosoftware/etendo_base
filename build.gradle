@@ -2,17 +2,14 @@ plugins {
     id 'maven-publish'
     id 'java'
 }
-sourceSets{
-    main{
-        java{
-            srcDirs 'build/javasqlc/src'
-            srcDirs 'build/javasqlc/srcAD'
-            srcDirs 'src'
-            srcDirs 'src-gen'
-            srcDirs 'srcAD'
-        }
-    }
-}
+sourceSets.main.java.outputDir = file("$buildDir/classes/")
+sourceSets.main.java.srcDirs = [
+        'build/javasqlc/src',
+        'build/javasqlc/srcAD',
+        'src',
+        'src-gen',
+        'srcAD'
+]
 
 configurations {
     coreDep
@@ -27,8 +24,11 @@ dependencies {
         exclude "WebContent"
     }
 }
-file('modules').eachDir {
-    sourceSets.main.java.srcDirs += it.toString()+"/src"
+
+if(file('modules').exists() && file('modules').isDirectory()){
+    file('modules').eachDir {
+        sourceSets.main.java.srcDirs += it.toString()+"/src"
+    }
 }
 
 
@@ -93,8 +93,9 @@ task prepareConfig(type: Copy){
     rename { String fileName ->
         fileName.replace("Openbravo.properties.template", "Openbravo.properties")
     }
-    doFirst{
+    doLast{
         ant.propertyfile(file: "config/Openbravo.properties") {
+            entry( key: "context.name", value: findProperty("context.name"))
             entry( key: "bbdd.sid", value: findProperty("bbdd.sid"))
             entry( key: "bbdd.url", value: "jdbc:postgresql://localhost:"+findProperty("bbdd.port"))
             entry( key: "bbdd.systemUser", value: findProperty("bbdd.systemUser"))

@@ -52,9 +52,9 @@ repositories {
     maven {
         url "https://repo.futit.cloud/repository/maven-releases"
     }
-    maven {
+    /*maven {
         url "http://localhost:8081/repository/obclassic"
-    }
+    }*/
 }
 
 

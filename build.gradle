@@ -1,23 +1,49 @@
+/**
+ * Gradle for openbravo projects.
+ *
+ * @author: androettop
+ */
+
+
+/**
+ * PROJECT CONFIGURATIONS
+ */
+
 plugins {
     id 'maven-publish'
     id 'java'
 }
-sourceSets.main.java.outputDir = file("$buildDir/classes/")
-sourceSets.main.java.srcDirs = [
-        'build/javasqlc/src',
-        'build/javasqlc/srcAD',
-        'src',
-        'src-gen',
-        'srcAD'
-]
+
+sourceSets{
+    main{
+        java{
+            outputDir = file("$buildDir/classes/")
+            srcDirs = ['build/javasqlc/src'] //clean the default sources directories.
+            srcDirs 'build/javasqlc/srcAD'
+            srcDirs 'src'
+            srcDirs 'src-gen'
+            srcDirs 'srcAD'
+        }
+    }
+}
+//set the modules sources directories.
+if(file('modules').exists() && file('modules').isDirectory()){
+    file('modules').eachDir {
+        sourceSets.main.java.srcDirs += it.toString()+"/src"
+    }
+}
 
 configurations {
     coreDep
     moduleDeps
 }
-
+/**
+ * DEPENDENCIES
+ */
 dependencies {
     coreDep 'com.smf.classic.core:ob:[20.1.2,)@zip'
+
+    // hack to load jar dependencies.
     implementation fileTree(project.projectDir) {
         include "**/lib/**/*.jar"
         exclude "\${env.CATALINA_HOME}"
@@ -25,13 +51,22 @@ dependencies {
     }
 }
 
-if(file('modules').exists() && file('modules').isDirectory()){
-    file('modules').eachDir {
-        sourceSets.main.java.srcDirs += it.toString()+"/src"
+/**
+ * REPOSITORIES CONFIGURATIONS
+ */
+
+repositories {
+    jcenter()
+    maven {
+        url "https://repo.futit.cloud/repository/maven-releases"
     }
 }
 
+/**
+ * BUILD TASKS
+ */
 
+/** map from ant tasks to gradle*/
 ant.importBuild('build.xml') { String oldTargetName ->
     switch (oldTargetName) {
         case 'clean':
@@ -46,17 +81,6 @@ ant.importBuild('build.xml') { String oldTargetName ->
             return oldTargetName
     }
 }
-
-repositories {
-    jcenter()
-    maven {
-        url "https://repo.futit.cloud/repository/maven-releases"
-    }
-    /*maven {
-        url "http://localhost:8081/repository/obclassic"
-    }*/
-}
-
 
 
 /** Expand the core from the dependency */

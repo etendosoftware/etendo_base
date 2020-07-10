@@ -12,6 +12,7 @@
 plugins {
     id 'maven-publish'
     id 'java'
+    id 'war'
 }
 
 sourceSets{
@@ -77,11 +78,17 @@ ant.importBuild('build.xml') { String oldTargetName ->
             return 'antInit'
         case 'install.source':
             return 'antInstall'
+        case 'war':
+            return 'antWar'
         default:
             return oldTargetName
     }
 }
-
+/** war coinfiguration */
+tasks.war.dependsOn += tasks.smartbuild
+war {
+    from 'WebContent'
+}
 
 /** Expand the core from the dependency */
 task expandCore(type: Copy) {
@@ -150,3 +157,5 @@ task install{
     dependsOn setup
     finalizedBy antInstall
 }
+
+

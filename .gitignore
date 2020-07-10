@@ -6,3 +6,6 @@
 !gradlew.bat
 !gradle/**
 !gradle.properties
+!settings.gradle
+!.run
+!.run/**

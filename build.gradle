@@ -4,7 +4,6 @@
  * @author: androettop
  */
 
-
 /**
  * PROJECT CONFIGURATIONS
  */
@@ -85,7 +84,6 @@ ant.importBuild('build.xml') { String oldTargetName ->
     }
 }
 /** war coinfiguration */
-tasks.war.dependsOn += tasks.smartbuild
 war {
     from 'WebContent'
 }

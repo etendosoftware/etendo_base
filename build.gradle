@@ -60,8 +60,19 @@ dependencies {
 
 repositories {
     jcenter()
+    
     maven {
         url "https://repo.futit.cloud/repository/maven-releases"
+        mavenContent {
+            releasesOnly()
+        }
+    }
+
+    maven {
+        url "https://repo.futit.cloud/repository/maven-snapshots"
+        mavenContent {
+            snapshotsOnly()
+        }
     }
 }
 

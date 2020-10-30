@@ -52,6 +52,7 @@ dependencies {
     moduleDeps 'com.smf:smartclient.boostedui:[1.0.0,)@zip'
     moduleDeps 'com.smf:securewebservices:[1.1.1,)@zip'
     moduleDeps 'com.smf:mobile.utils:[1.0.2,)@zip'
+    moduleDeps 'com.smf:jobs.example:[0.0.1,)@zip'
 
     // hack to load jar dependencies.
     implementation fileTree(project.projectDir) {

@@ -56,12 +56,17 @@ dependencies {
 
 /**
  * REPOSITORIES CONFIGURATIONS
+ * (Configure credentials in gradle.properties inside GRADLE_USER_HOME (default: ~/.gradle))
  */
 
 repositories {
     jcenter()
     maven {
         url "https://repo.futit.cloud/repository/maven-releases"
+        credentials {
+            username "$mavenUser"
+            password "$mavenPassword"
+        }
     }
 }
 

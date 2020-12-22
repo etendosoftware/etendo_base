@@ -64,6 +64,7 @@ dependencies {
 
 /**
  * REPOSITORIES CONFIGURATIONS
+ * (Configure credentials in gradle.properties inside GRADLE_USER_HOME (default: ~/.gradle))
  */
 
 repositories {
@@ -71,6 +72,10 @@ repositories {
     
     maven {
         url "https://repo.futit.cloud/repository/maven-releases"
+        credentials {
+            username "$mavenUser"
+            password "$mavenPassword"
+        }
         mavenContent {
             releasesOnly()
         }
@@ -78,6 +83,10 @@ repositories {
 
     maven {
         url "https://repo.futit.cloud/repository/maven-snapshots"
+        credentials {
+            username "$mavenUser"
+            password "$mavenPassword"
+        }
         mavenContent {
             snapshotsOnly()
         }

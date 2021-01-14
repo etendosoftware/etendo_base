@@ -72,6 +72,10 @@ repositories {
             password "$mavenPassword"
         }
     }
+
+    maven {
+        url "https://repo.futit.cloud/repository/maven-public-releases"
+    }
 }
 
 /**

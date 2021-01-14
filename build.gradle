@@ -48,11 +48,19 @@ configurations.all {
  */
 dependencies {
     coreDep 'com.smf.classic.core:ob:[20.1.2,)@zip'
-    moduleDeps 'com.smf:smartclient.debugtools:[1.0.1,)@zip'
-    moduleDeps 'com.smf:smartclient.boostedui:[1.0.0,)@zip'
-    moduleDeps 'com.smf:securewebservices:[1.1.1,)@zip'
-    moduleDeps 'com.smf:mobile.utils:[1.0.2,)@zip'
-    moduleDeps 'com.smf:jobs.example:[0.0.1,)@zip'
+    // Two ways of declaring dependencies:
+    moduleDeps group: 'com.smf', name: 'smartclient.debugtools', version:'[1.0.1,)', ext:'zip', transitive: true
+    
+    moduleDeps('com.smf:securewebservices:[1.1.1,)@zip') {
+        transitive = true
+    }
+    moduleDeps 'com.smf:mobile.utils:[1.0.2,)@zip' {
+        transitive = true
+    }
+    moduleDeps 'com.smf:jobs.example:[0.0.1,)@zip' {
+        transitive = true
+    }
+    // Add custom dependencies at moduleDeps
 
     // hack to load jar dependencies.
     implementation fileTree(project.projectDir) {
@@ -90,6 +98,10 @@ repositories {
         mavenContent {
             snapshotsOnly()
         }
+    }
+
+    maven {
+        url "https://repo.futit.cloud/repository/maven-public-releases"
     }
 }
 

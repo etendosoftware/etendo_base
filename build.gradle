@@ -121,9 +121,11 @@ task expandCore(type: Copy) {
 task expandModules(type: Copy) {
     def extractDir = "${project.projectDir}/modules"
     dependsOn configurations.moduleDeps
+
     from {
-        configurations.moduleDeps.collect {
-            zipTree(it)
+        configurations.moduleDeps.findResults {
+            // Avoid extracting the core dependency inside the modules folder
+            it.getCanonicalPath().contains('com.smf.classic.core') ? null : zipTree(it)
         }
     }
     into extractDir
@@ -171,5 +173,3 @@ task install{
     dependsOn setup
     finalizedBy antInstall
 }
-
-

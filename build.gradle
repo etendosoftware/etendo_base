@@ -37,12 +37,6 @@ configurations {
     coreDep
     moduleDeps
 }
-
-configurations.all {
-    // Check for updates every build
-    resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
-}
-
 /**
  * DEPENDENCIES
  */
@@ -55,9 +49,6 @@ dependencies {
         transitive = true
     }
     moduleDeps('com.smf:mobile.utils:[1.0.2,)@zip') {
-        transitive = true
-    }
-    moduleDeps('com.smf:jobs.example:[0.0.1,)@zip') {
         transitive = true
     }
     // Add custom dependencies at moduleDeps
@@ -77,26 +68,11 @@ dependencies {
 
 repositories {
     jcenter()
-    
     maven {
         url "https://repo.futit.cloud/repository/maven-releases"
         credentials {
             username "$mavenUser"
             password "$mavenPassword"
-        }
-        mavenContent {
-            releasesOnly()
-        }
-    }
-
-    maven {
-        url "https://repo.futit.cloud/repository/maven-snapshots"
-        credentials {
-            username "$mavenUser"
-            password "$mavenPassword"
-        }
-        mavenContent {
-            snapshotsOnly()
         }
     }
 

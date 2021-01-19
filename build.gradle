@@ -162,12 +162,15 @@ task expandModules(type: Copy) {
 
 /** Copy Openbravo.properties template and set values */
 task prepareConfig(type: Copy){
-    from file("config/Openbravo.properties.template")
-    into file("config")
-    rename { String fileName ->
-        fileName.replace("Openbravo.properties.template", "Openbravo.properties")
-    }
-    doLast{
+    def props = new File('config/Openbravo.properties')
+
+    if (!props.exists()) {
+        // Create Openbravo.properties with the values from gradle.properties
+        from file("config/Openbravo.properties.template")
+        into file("config")
+        rename { String fileName ->
+            fileName.replace("Openbravo.properties.template", "Openbravo.properties")
+        }
         ant.propertyfile(file: "config/Openbravo.properties") {
             entry( key: "context.name", value: findProperty("context.name"))
             entry( key: "bbdd.sid", value: findProperty("bbdd.sid"))

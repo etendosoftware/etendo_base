@@ -4,7 +4,7 @@ plugins {
     id 'maven-publish'
 }
 
-apply from: 'https://repo.futit.cloud/repository/static-public-releases/com/etendo/etendo/0.0.1/etendo-0.0.1.gradle'
+apply from: 'https://repo.futit.cloud/repository/static-public-releases/com/etendo/etendo/latest/etendo-latest.gradle'
 
 dependencies {
     // Add your dependencies here

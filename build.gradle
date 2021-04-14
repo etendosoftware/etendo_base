@@ -24,9 +24,3 @@ ext {
 		nexusPassword ="$nx_psw"
 	}
 }
-
-repositories {
-  maven {
-    url 'https://repo.futit.cloud/repository/maven-snapshots'
-  }
-}

@@ -4,9 +4,29 @@ plugins {
     id 'maven-publish'
 }
 
+
+
 apply from: 'https://repo.futit.cloud/repository/static-public-releases/com/etendo/etendo/latest/etendo-latest.gradle'
+
+etendo { 
+   coreVersion = "latest.integration"
+}
 
 dependencies {
     // Add your dependencies here
 
+}
+
+
+ext {
+	if (project.hasProperty('nx_usr') && project.hasProperty('nx_psw')) {
+		nexusUser="$nx_usr"
+		nexusPassword ="$nx_psw"
+	}
+}
+
+repositories {
+  maven {
+    url 'https://repo.futit.cloud/repository/maven-snapshots'
+  }
 }

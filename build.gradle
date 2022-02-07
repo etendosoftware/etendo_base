@@ -7,7 +7,7 @@ plugins {
 apply from: 'https://repo.futit.cloud/repository/static-public-releases/com/etendo/etendo/latest/etendo-latest.gradle'
 
 etendo { 
-   coreVersion = "[20.2.1,20.2.2)"
+   coreVersion = "[21.4.0,22.1.0)"
 }
 
 dependencies {

@@ -2,8 +2,9 @@ plugins {
     id 'java'
     id 'war'
     id 'maven-publish'
-    id 'com.etendoerp.gradleplugin' version '1.0.0'
 }
+
+apply from: 'https://repo.futit.cloud/repository/static-public-releases/com/etendo/etendo/latest/etendo-latest.gradle'
 
 etendo { 
    coreVersion = "[21.4.0,)"

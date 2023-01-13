@@ -6,7 +6,7 @@ plugins {
 }
 
 etendo {
-   coreVersion = "[21.4.0,22.4.0)"
+   coreVersion = "[21.4.0,23.1.0)"
 }
 
 dependencies {
@@ -15,7 +15,7 @@ dependencies {
     Then when executing any gradle command the core will be dynamically downloaded as a dependency.
     Execute gradle tasks with -PnexusUser=<user> and -PnexusPassword=<pass> or set up the credentials in gradle.properties file
 
-    implementation('com.etendoerp.platform:etendo-core:[22.1.0,22.4.0)')
+    implementation('com.etendoerp.platform:etendo-core:[22.1.0,23.1.0)')
     */
 
     //Add other dependencies bellow

@@ -1,12 +1,13 @@
 plugins {
     id 'java'
     id 'war'
+    id 'groovy'
     id 'maven-publish'
-    id 'com.etendoerp.gradleplugin' version '1.0.5'
+    id 'com.etendoerp.gradleplugin' version '1.0.6'
 }
 
 etendo {
-   coreVersion = "[21.4.0,23.1.0)"
+    coreVersion = "[21.4.0,23.1.0)"
 }
 
 dependencies {

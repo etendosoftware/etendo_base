@@ -3,7 +3,7 @@ plugins {
     id 'war'
     id 'groovy'
     id 'maven-publish'
-    id 'com.etendoerp.gradleplugin' version '1.0.6'
+    id 'com.etendoerp.gradleplugin' version 'latest.release'
 }
 
 etendo {

@@ -7,16 +7,16 @@ plugins {
 }
 
 etendo {
-    coreVersion = "[21.4.0,23.2.0)"
+    coreVersion = "[21.4.0,23.3.0)"
 }
 
 dependencies {
     /*
     To use Etendo in JAR format delete the Etendo section and uncomment the following line.
     Then when executing any gradle command the core will be dynamically downloaded as a dependency.
-    Execute gradle tasks with -PnexusUser=<user> and -PnexusPassword=<pass> or set up the credentials in gradle.properties file
+    Set up the credentials in gradle.properties file
 
-    implementation('com.etendoerp.platform:etendo-core:[22.1.0,23.2.0)')
+    implementation('com.etendoerp.platform:etendo-core:[22.1.0,23.3.0)')
     */
 
     //Add other dependencies bellow

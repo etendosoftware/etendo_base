@@ -9,3 +9,5 @@
 !settings.gradle
 !.run
 !.run/**
+!.github
+!.github/**

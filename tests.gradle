@@ -11,12 +11,13 @@ test {
 }
 
 dependencies {
-    testImplementation 'org.codehaus.groovy:groovy-all:2.5.14'
-    testImplementation platform("org.spockframework:spock-bom:2.0-M4-groovy-2.5")
+    testImplementation 'org.codehaus.groovy:groovy-all:3.0.9'
+    testImplementation platform("org.spockframework:spock-bom:2.0-M4-groovy-3.0")
     testImplementation 'org.spockframework:spock-core'
     testImplementation 'org.spockframework:spock-junit4'
     testImplementation 'junit:junit:4.13.1'
-    testImplementation( "com.athaydes:spock-reports:2.0-groovy-2.5" ) {
+    testImplementation 'org.mockito:mockito-core:3.4.6'
+    testImplementation( "com.athaydes:spock-reports:2.0-groovy-3.0" ) {
         transitive = false // this avoids affecting your version of Groovy/Spock
     }
     testImplementation fileTree(project.projectDir) {
@@ -47,6 +48,7 @@ sourceSets{
 if(file('modules').exists() && file('modules').isDirectory()){
     file('modules').eachDir {
         sourceSets.test.java.srcDirs += it.toString()+"/src-test/src"
+        sourceSets.test.resources.srcDirs +=  it.toString()+"/src-test/resources"
         sourceSets.test.java.outputDir = file("src-test/build/classes")
         sourceSets.test.groovy.srcDirs += it.toString()+"/src-test/test/groovy"
         sourceSets.test.groovy.outputDir = file("src-test/build/classes")
@@ -55,11 +57,10 @@ if(file('modules').exists() && file('modules').isDirectory()){
 if(file('modules_core').exists() && file('modules_core').isDirectory()){
     file('modules_core').eachDir {
         sourceSets.test.java.srcDirs += it.toString()+"/src-test"
+        sourceSets.test.resources.srcDirs +=  it.toString()+"/src-test/resources"
         sourceSets.test.java.outputDir = file("src-test/build/classes")
     }
 }
-
-test.dependsOn('ant.compile.test')
 
 task depsTest {
     doLast {

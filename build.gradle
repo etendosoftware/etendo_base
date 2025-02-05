@@ -16,7 +16,7 @@ dependencies {
     Then when executing any gradle command the core will be dynamically downloaded as a dependency.
     Set up the credentials in gradle.properties file
 
-    implementation('com.etendoerp.platform:etendo-core:[22.1.0,25.1.0)
+    implementation('com.etendoerp.platform:etendo-core:[22.1.0,25.1.0)')'
     */
 
     //Add other dependencies bellow

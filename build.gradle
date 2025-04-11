@@ -4,6 +4,7 @@ plugins {
     id 'groovy'
     id 'maven-publish'
     id 'com.etendoerp.gradleplugin' version '1.5.4'
+    id 'com.etendoerp.testing.gradleplugin' version '1.0.0'
 }
 
 etendo {

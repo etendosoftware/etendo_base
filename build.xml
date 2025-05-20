@@ -1,5 +1,5 @@
 <project>
-    <property name="dummy" value="Before run this task you nedd to expand core with ./gradlew expandCore" />
+    <property name="dummy" value="Before running this task you need to expand core with ./gradlew expandCore" />
     <target name="setup">
         <fail>${dummy}</fail>
     </target>

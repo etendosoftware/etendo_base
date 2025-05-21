@@ -3,12 +3,12 @@ plugins {
     id 'war'
     id 'groovy'
     id 'maven-publish'
-    id 'com.etendoerp.gradleplugin' version '1.5.4'
-    id 'com.etendoerp.testing.gradleplugin' version '1.0.0'
+    id 'com.etendoerp.gradleplugin' version '2.0.1'
+    id 'com.etendoerp.testing.gradleplugin' version '2.0.0'
 }
 
 etendo {
-    coreVersion = "[21.4.0,25.1.0)"
+    coreVersion = "[25.1.0,25.2.0)"
 }
 
 dependencies {
@@ -17,10 +17,10 @@ dependencies {
     Then when executing any gradle command the core will be dynamically downloaded as a dependency.
     Set up the credentials in gradle.properties file
 
-    implementation('com.etendoerp.platform:etendo-core:[22.1.0,25.1.0)')
+    implementation('com.etendoerp.platform:etendo-core:[22.1.0,25.2.0)')
     */
 
     //Add other dependencies bellow
-    implementation('com.etendoerp:dependencymanager:latest.release')
+    implementation('com.etendoerp:dependencymanager:[3.0.0,4.0.0)'
 
 }

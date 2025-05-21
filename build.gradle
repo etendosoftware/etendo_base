@@ -21,6 +21,6 @@ dependencies {
     */
 
     //Add other dependencies bellow
-    implementation('com.etendoerp:dependencymanager:[3.0.0,4.0.0)'
+    implementation('com.etendoerp:dependencymanager:[3.0.0,4.0.0)')
 
 }

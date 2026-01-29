@@ -1,0 +1,43 @@
+# Dockerfile.prebuild - Imagen pre-construida con todo el setup
+# Esta imagen se usa como base para desarrollo rápido
+
+FROM mcr.microsoft.com/devcontainers/java:17-bullseye
+
+# Eliminar repositorio de Yarn con clave expirada
+RUN rm -f /etc/apt/sources.list.d/yarn.list 2>/dev/null || true
+
+# Instalar herramientas adicionales
+RUN apt-get update && apt-get install -y \
+    git \
+    curl \
+    unzip \
+    postgresql-client \
+    && rm -rf /var/lib/apt/lists/*
+
+# Configurar directorio de trabajo
+WORKDIR /workspace
+
+# Copiar archivos de proyecto
+COPY . /workspace/
+
+# Pre-descargar dependencias de Gradle (cache)
+RUN if [ -f "gradlew" ]; then \
+    chmod +x gradlew && \
+    ./gradlew --no-daemon dependencies || true && \
+    ./gradlew --no-daemon setup || true; \
+    fi
+
+# Pre-calentar cache de Gradle
+RUN mkdir -p /root/.gradle && \
+    echo "org.gradle.daemon=false" >> /root/.gradle/gradle.properties && \
+    echo "org.gradle.caching=true" >> /root/.gradle/gradle.properties
+
+# Limpiar archivos temporales pero mantener cache
+RUN rm -rf /workspace/build /workspace/.gradle/daemon
+
+# Variables de entorno por defecto
+ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+ENV GRADLE_USER_HOME=/root/.gradle
+
+# Mantener container activo
+CMD ["sleep", "infinity"]

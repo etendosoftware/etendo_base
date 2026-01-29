@@ -12,16 +12,10 @@ etendo {
 }
 
 dependencies {
-    /*
-    To use Etendo in JAR format delete the Etendo section and uncomment the following line.
-    Then when executing any gradle command the core will be dynamically downloaded as a dependency.
-    Set up the credentials in gradle.properties file
-
+    // Etendo Core in JAR format
     implementation('com.etendoerp.platform:etendo-core:[25.1.0,26.1.0)')
-    */
 
     //Add other dependencies bellow
-
     implementation('com.etendoerp:dependencymanager:[3.0.0,4.0.0)')
     implementation('com.etendoerp:platform.extensions:[3.0.0,4.0.0)')
     implementation('com.etendoerp:copilot.extensions:[3.0.0,4.0.0)')

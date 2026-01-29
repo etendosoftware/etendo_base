@@ -1,0 +1,49 @@
+services:
+  db:
+    image: postgres:15
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=syspass
+      - POSTGRES_DB=etendo
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  tomcat:
+    image: tomcat:9-jdk17
+    volumes:
+      - ./lib/etendo:/usr/local/tomcat/webapps/etendo
+      - ./.devcontainer/tomcat/server.xml:/usr/local/tomcat/conf/server.xml
+    ports:
+      - "8080:8080"
+    environment:
+      - CATALINA_OPTS=-Djava.security.egd=file:/dev/./urandom
+    depends_on:
+      - db
+
+  app:
+    build:
+      context: .
+      dockerfile: .devcontainer/Dockerfile
+    volumes:
+      - .:/workspace:cached
+      - gradle_cache:/root/.gradle
+    working_dir: /workspace
+    ports:
+      - "3851:3851"
+    environment:
+      - DATABASE_URL=jdbc:postgresql://db:5432/etendo
+      - GITHUB_USER=${GITHUB_USER}
+      - GITHUB_TOKEN=${GITHUB_TOKEN}
+      - NEXUS_USER=${NEXUS_USER}
+      - NEXUS_PASSWORD=${NEXUS_PASSWORD}
+    depends_on:
+      - db
+      - tomcat
+    stdin_open: true
+    tty: true
+
+volumes:
+  postgres_data:
+  gradle_cache:

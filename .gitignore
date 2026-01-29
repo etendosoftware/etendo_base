@@ -10,4 +10,7 @@
 !.run
 !.run/**
 !.github
-!.github/**
+!.github/**.env
+!.devcontainer
+!.devcontainer/**
+!docker-compose.yml

@@ -1,0 +1,18 @@
+{
+  "name": "Etendo SaaS Dev Env",
+  "dockerComposeFile": "../docker-compose.yml",
+  "service": "app",
+  "workspaceFolder": "/workspace",
+  "onCreateCommand": "bash .devcontainer/setup-etendo.sh",
+  "postStartCommand": "echo 'Etendo ready at http://localhost:8080/etendo'",
+  "forwardPorts": [8080, 5432],
+  "features": {
+    "ghcr.io/devcontainers/features/java:1": { "version": "17" },
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {}
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": ["vscjava.vscode-java-pack"]
+    }
+  }
+}

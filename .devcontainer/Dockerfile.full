@@ -1,0 +1,52 @@
+# Dockerfile.full - Imagen completa con Etendo pre-instalado
+# Tiempo de inicio: ~10 segundos (vs ~10 minutos desde cero)
+
+FROM mcr.microsoft.com/devcontainers/java:17-bullseye
+
+ARG GITHUB_USER
+ARG GITHUB_TOKEN
+ARG NEXUS_USER  
+ARG NEXUS_PASSWORD
+
+# Eliminar repositorio de Yarn con clave expirada
+RUN rm -f /etc/apt/sources.list.d/yarn.list 2>/dev/null || true
+
+# Instalar herramientas
+RUN apt-get update && apt-get install -y \
+    git curl unzip postgresql-client \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /workspace
+
+# Copiar proyecto
+COPY . /workspace/
+
+# Configurar gradle.properties con credenciales de build
+RUN echo "bbdd.rdbms=POSTGRESQL" > gradle.properties && \
+    echo "bbdd.driver=org.postgresql.Driver" >> gradle.properties && \
+    echo "bbdd.url=jdbc:postgresql://db:5432" >> gradle.properties && \
+    echo "bbdd.sid=etendo" >> gradle.properties && \
+    echo "bbdd.systemUser=postgres" >> gradle.properties && \
+    echo "bbdd.systemPassword=syspass" >> gradle.properties && \
+    echo "bbdd.user=tad" >> gradle.properties && \
+    echo "bbdd.password=tad" >> gradle.properties && \
+    echo "githubUser=${GITHUB_USER}" >> gradle.properties && \
+    echo "githubToken=${GITHUB_TOKEN}" >> gradle.properties && \
+    echo "nexusUser=${NEXUS_USER}" >> gradle.properties && \
+    echo "nexusPassword=${NEXUS_PASSWORD}" >> gradle.properties
+
+# Ejecutar setup y compilación completa
+RUN chmod +x gradlew && \
+    ./gradlew --no-daemon setup && \
+    ./gradlew --no-daemon classes smartbuild -x test || true
+
+# Crear dump de BD para restore rápido (si hay)
+# RUN pg_dump ... > /workspace/.devcontainer/etendo_base.sql
+
+# Limpiar para reducir tamaño de imagen
+RUN rm -rf /root/.gradle/daemon /root/.gradle/caches/*/transforms-*
+
+ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+ENV ETENDO_PREBUILT=true
+
+CMD ["sleep", "infinity"]

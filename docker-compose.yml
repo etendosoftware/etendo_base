@@ -29,6 +29,8 @@ services:
     volumes:
       - .:/workspace:cached
       - gradle_cache:/root/.gradle
+      # Mount plugin repo for Fast Install mode (optional)
+      - ../com.etendoerp.gradleplugin:/workspace/com.etendoerp.gradleplugin:cached
     working_dir: /workspace
     ports:
       - "3851:3851"
@@ -38,6 +40,8 @@ services:
       - GITHUB_TOKEN=${GITHUB_TOKEN}
       - NEXUS_USER=${NEXUS_USER}
       - NEXUS_PASSWORD=${NEXUS_PASSWORD}
+      # Set to 'true' to enable Fast Install mode with buildSrc
+      - FAST_INSTALL_MODE=${FAST_INSTALL_MODE:-false}
     depends_on:
       - db
       - tomcat

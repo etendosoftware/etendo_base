@@ -47,7 +47,7 @@ flowchart LR
 ## How the pieces work
 
 - **Build once, test many.** The regression build job runs `install` once, then publishes a
-  `pg_dump` (~26 MB) and the compiled workspace (~94 MB zstd). Each shard restores both and starts
+  `pg_dump` (~26 MB) and the compiled workspace (~250 MB zstd, `WebContent` included because test mocks read `source.path/WebContent`). Each shard restores both and starts
   testing, without spending ~5 minutes on its own install. The dump and the restore run inside the
   Postgres service container, so the client and server versions always match.
 - **Ordered, time-balanced shards** (`plan-shards.py`). Some Etendo tests depend on execution

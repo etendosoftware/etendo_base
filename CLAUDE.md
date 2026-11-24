@@ -18,3 +18,5 @@ versioned; the core sources (`src*/`, `modules_core/`, `src-test/`) come from `.
 - A test failing on a clean install goes to `.github/qa/known-failures.txt` with its verified cause, not deleted.
 - Failure triage rules live in `.github/qa/ai/triage-prompt.md` (shared by CI and the `qa-triager` agent).
 - Changing anything in `.github/qa/ai/` requires running `.github/qa/ai/evals/run-evals.py`.
+
+<!-- QA pipeline demo PR: harmless docs change, expected risk low and green smoke. -->

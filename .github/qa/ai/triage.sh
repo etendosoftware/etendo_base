@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 # AI triage of failing tests with Claude Code in headless mode (same script in CI and locally).
 # Usage: .github/qa/ai/triage.sh <failures.json> <diff-file|-> <out-dir>
-# Env:   QA_AI_MODEL (default sonnet), QA_AI_MAX_TURNS (default 30). Auth: ANTHROPIC_API_KEY or a logged-in CLI.
+# Env:   QA_AI_MODEL (default sonnet), QA_AI_MAX_TURNS (default 30).
+# Auth:  ANTHROPIC_API_KEY (API billing), CLAUDE_CODE_OAUTH_TOKEN (subscription, from `claude setup-token`)
+#        or a logged-in CLI. Do not add --bare: it ignores CLAUDE_CODE_OAUTH_TOKEN.
 # Writes <out-dir>/triage.json (structured verdicts) and <out-dir>/triage.md (PR-ready). Read-only tools only.
 set -euo pipefail
 here="$(cd "$(dirname "$0")" && pwd)"

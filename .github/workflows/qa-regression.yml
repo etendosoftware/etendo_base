@@ -118,7 +118,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
-      HAS_AI: ${{ secrets.ANTHROPIC_API_KEY != '' }}
+      HAS_AI: ${{ secrets.ANTHROPIC_API_KEY != '' || secrets.CLAUDE_CODE_OAUTH_TOKEN != '' }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
@@ -141,7 +141,8 @@ jobs:
         if: env.FAILED != '0' && env.HAS_AI == 'true'
         continue-on-error: true
         env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}            # API billing; wins if both are set
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}  # or a subscription token from `claude setup-token`
         run: |
           zstd -dc "$RUNNER_TEMP/etendo-build/workspace.tar.zst" | tar -xf - --exclude=./build/qa
           npm install -g @anthropic-ai/claude-code

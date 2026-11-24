@@ -37,7 +37,8 @@ jobs:
 
       - name: Run evals
         env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}            # API billing; wins if both are set
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}  # or a subscription token from `claude setup-token`
         run: |
           npm install -g @anthropic-ai/claude-code
           .github/qa/ai/evals/run-evals.py -k "${{ inputs.trials || '3' }}" --min-pass-rate 0.8

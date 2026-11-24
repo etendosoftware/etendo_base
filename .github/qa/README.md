@@ -121,4 +121,5 @@ the `qa-triager` subagent.
 |---|---|
 | `ETENDO_GITHUB_USER`, `ETENDO_GITHUB_TOKEN` | PAT with `read:packages` for Etendo's GitHub packages |
 | `ETENDO_NEXUS_USER`, `ETENDO_NEXUS_PASSWORD` | optional; not yet confirmed whether they are required |
-| `ANTHROPIC_API_KEY` | AI triage and evals; without it, those steps are skipped |
+| `ANTHROPIC_API_KEY` | AI triage, evals and canary, billed to the API account |
+| `CLAUDE_CODE_OAUTH_TOKEN` | Alternative to the API key: a subscription token (Pro/Max/Team/Enterprise) from `claude setup-token`, valid one year. If both are set, the API key wins. Never run the scripts with `--bare`, which ignores this token. Without either secret, the AI steps are skipped |

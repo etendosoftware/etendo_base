@@ -16,3 +16,4 @@ org.openbravo.test.security.OBContextCollectionsTest
 org.openbravo.test.security.PasswordStrengthCheckerTest
 org.openbravo.test.security.StandardCrossOrganizationReference
 org.openbravo.test.security.WritableReadableOrganizationClientTest
+org.openbravo.test.security.UserInfoSessionDataTest

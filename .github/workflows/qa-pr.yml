@@ -1,0 +1,155 @@
+name: QA · Pull request
+
+# Validates "this change works" (fast, per PR). "Main works" is qa-regression.yml after merge.
+#   risk   — deterministic risk grade + `risk:*` label, runs on every PR event incl. drafts (seconds)
+#   smoke  — clean install + smoke suite, skipped while the PR is a draft (~10 min); AI triage on failure
+#   full   — sharded regression when the PR is labelled `qa:full` or graded high risk
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, labeled, ready_for_review]
+  workflow_dispatch:
+
+concurrency:
+  group: qa-pr-${{ github.event.pull_request.number || github.ref }}-${{ github.event.action == 'labeled' && 'full' || 'smoke' }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  risk:
+    name: Risk grade
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      level: ${{ steps.grade.outputs.level }}
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - name: Grade
+        id: grade
+        run: |
+          git diff "origin/${{ github.base_ref || 'main' }}...HEAD" > "$RUNNER_TEMP/change.diff"
+          echo "level=$(python3 .github/qa/risk.py "$RUNNER_TEMP/change.diff" --out "$RUNNER_TEMP/risk")" >> "$GITHUB_OUTPUT"
+          cat "$RUNNER_TEMP/risk/risk.md" >> "$GITHUB_STEP_SUMMARY"
+      - name: Label
+        if: github.event_name == 'pull_request'
+        continue-on-error: true   # fork PRs get a read-only token
+        uses: actions/github-script@v7
+        env:
+          LEVEL: ${{ steps.grade.outputs.level }}
+        with:
+          script: |
+            const { owner, repo } = context.repo, issue_number = context.issue.number;
+            const want = `risk:${process.env.LEVEL}`;
+            for (const l of context.payload.pull_request.labels.map(l => l.name))
+              if (l.startsWith('risk:') && l !== want)
+                await github.rest.issues.removeLabel({ owner, repo, issue_number, name: l });
+            await github.rest.issues.addLabels({ owner, repo, issue_number, labels: [want] });
+
+  smoke:
+    name: Install + smoke
+    if: github.event.action != 'labeled' && github.event.pull_request.draft != true
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      HAS_AI: ${{ secrets.ANTHROPIC_API_KEY != '' }}
+    services:
+      postgres:
+        image: postgres:16
+        env: { POSTGRES_PASSWORD: syspass, LANG: en_US.utf8 }  # English server messages
+        ports: ["5432:5432"]
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+
+      - uses: ./.github/actions/etendo-env
+        with:
+          github-user: ${{ secrets.ETENDO_GITHUB_USER }}
+          github-token: ${{ secrets.ETENDO_GITHUB_TOKEN }}
+          nexus-user: ${{ secrets.ETENDO_NEXUS_USER }}
+          nexus-password: ${{ secrets.ETENDO_NEXUS_PASSWORD }}
+
+      - name: Build Etendo (expandCore, setup, install)
+        run: |
+          yes Y | ./gradlew expandCore --console=plain
+          ./gradlew setup --console=plain < /dev/null
+          ./gradlew install --console=plain < /dev/null
+
+      - name: Smoke tests
+        id: tests
+        continue-on-error: true   # the gate is the report step (quarantine- and floor-aware)
+        run: .github/qa/run-tests.sh .github/qa/suites/smoke.txt
+
+      - name: Report + gate
+        id: gate
+        if: always() && steps.tests.outcome != 'skipped'
+        run: |
+          git diff "origin/${{ github.base_ref || 'main' }}...HEAD" > build/change.diff || true
+          python3 .github/qa/risk.py build/change.diff --out build/qa > /dev/null
+          trap 'cat build/qa/summary.md >> "$GITHUB_STEP_SUMMARY"' EXIT
+          python3 .github/qa/report.py --gate --floor smoke --title "QA · Smoke" --out build/qa build/test-results/test
+
+      - name: AI triage
+        if: failure() && steps.gate.outcome == 'failure' && env.HAS_AI == 'true'
+        continue-on-error: true
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          npm install -g @anthropic-ai/claude-code
+          .github/qa/ai/triage.sh build/qa/failures.json build/change.diff build/qa
+          cat build/qa/triage.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Flaky tests → issues
+        if: always() && steps.tests.outcome != 'skipped'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: .github/qa/flaky-issues.sh build/qa/failures.json "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+
+      - name: Sticky PR comment
+        if: always() && github.event_name == 'pull_request'
+        continue-on-error: true   # fork PRs get a read-only token
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const read = p => fs.existsSync(p) ? fs.readFileSync(p, 'utf8') : '';
+            const marker = '<!-- etendo-qa-bot -->';
+            const body = [marker, read('build/qa/risk.md'),
+                          read('build/qa/summary.md') || '⚠️ QA run did not produce results — see the workflow log.',
+                          read('build/qa/triage.md'),
+                          `<sub>[Run log](${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId})</sub>`].join('\n\n');
+            const { owner, repo } = context.repo, issue_number = context.issue.number;
+            const comments = await github.paginate(github.rest.issues.listComments, { owner, repo, issue_number });
+            const mine = comments.find(c => c.body && c.body.includes(marker));
+            if (mine) await github.rest.issues.updateComment({ owner, repo, comment_id: mine.id, body });
+            else await github.rest.issues.createComment({ owner, repo, issue_number, body });
+
+      - name: Upload results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: qa-pr-results
+          path: |
+            build/qa/
+            build/test-results/test/*.xml
+            build/reports/tests/test/
+          if-no-files-found: warn
+
+  full-regression:
+    name: Full regression (qa:full or high risk)
+    needs: risk
+    if: >-
+      github.event.pull_request.draft != true &&
+      (github.event.action != 'labeled' || github.event.label.name == 'qa:full') &&
+      (contains(github.event.pull_request.labels.*.name, 'qa:full') || needs.risk.outputs.level == 'high')
+    permissions:
+      contents: read
+      issues: write
+    uses: ./.github/workflows/qa-regression.yml
+    secrets: inherit

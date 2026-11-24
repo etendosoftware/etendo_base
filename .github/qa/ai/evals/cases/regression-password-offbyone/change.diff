@@ -1,0 +1,11 @@
+--- a/src/org/openbravo/service/password/PasswordStrengthChecker.java
++++ b/src/org/openbravo/service/password/PasswordStrengthChecker.java
+@@ -56,7 +56,7 @@
+    * @return true if the password is strong enough, false otherwise
+    */
+   public boolean isStrongPassword(String password) {
+-    return hasMinimumLength(password) && (getCriteriaScore(password) >= MIN_REQUIRED_CRITERIA);
++    return hasMinimumLength(password) && (getCriteriaScore(password) > MIN_REQUIRED_CRITERIA);
+   }
+ 
+   private int getCriteriaScore(String password) {

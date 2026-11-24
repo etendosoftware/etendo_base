@@ -1,0 +1,26 @@
+{
+  "type": "object",
+  "required": ["summary", "failures"],
+  "properties": {
+    "summary": { "type": "string", "description": "2-3 sentences for the PR author: what broke and whether the change under test is likely responsible." },
+    "failures": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["test", "category", "confidence", "root_cause", "evidence", "suggested_action"],
+        "properties": {
+          "test": { "type": "string", "description": "Class.method as given in failures.json" },
+          "category": {
+            "type": "string",
+            "enum": ["regression", "test_defect", "needs_server", "environment", "flaky", "unknown"]
+          },
+          "confidence": { "type": "string", "enum": ["high", "medium", "low"] },
+          "caused_by_change": { "type": "boolean", "description": "true only if the diff plausibly causes this failure" },
+          "root_cause": { "type": "string" },
+          "evidence": { "type": "array", "items": { "type": "string", "description": "path:line plus what it shows" } },
+          "suggested_action": { "type": "string" }
+        }
+      }
+    }
+  }
+}

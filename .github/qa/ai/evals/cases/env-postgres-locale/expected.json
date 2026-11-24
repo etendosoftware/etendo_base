@@ -1,0 +1,13 @@
+{
+  "ground_truth": "Postgres lc_messages=es_AR returns Spanish errors; parser expects English",
+  "expect": {
+    "org.openbravo.test.system.ErrorTextParserIntegrationTest.testBoolean": {
+      "category": "environment",
+      "caused_by_change": false
+    },
+    "org.openbravo.test.system.ErrorTextParserIntegrationTest.testNonBooleanCheck": {
+      "category": "environment",
+      "caused_by_change": false
+    }
+  }
+}

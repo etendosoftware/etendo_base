@@ -1,0 +1,52 @@
+name: Etendo environment
+description: JDK 17, Gradle cache and a CI gradle.properties pointing at the job's Postgres service.
+inputs:
+  github-user:
+    required: true
+  github-token:
+    required: true
+  nexus-user:
+    required: false
+    default: ""
+  nexus-password:
+    required: false
+    default: ""
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-java@v4
+      with:
+        distribution: temurin
+        java-version: "17"
+
+    - name: Pin JVM locale (tests assert English texts)
+      shell: bash
+      run: echo "JAVA_TOOL_OPTIONS=-Duser.language=en -Duser.country=US" >> "$GITHUB_ENV"
+
+    - uses: gradle/actions/setup-gradle@v4
+
+    - name: Write gradle.properties
+      shell: bash
+      env:
+        GH_USER: ${{ inputs.github-user }}
+        GH_TOKEN: ${{ inputs.github-token }}
+        NEXUS_USER: ${{ inputs.nexus-user }}
+        NEXUS_PASSWORD: ${{ inputs.nexus-password }}
+      run: |
+        cat > gradle.properties <<EOF
+        githubUser=${GH_USER}
+        githubToken=${GH_TOKEN}
+        nexusUser=${NEXUS_USER}
+        nexusPassword=${NEXUS_PASSWORD}
+        context.name=etendo
+        bbdd.sid=etendo
+        bbdd.port=5432
+        bbdd.systemUser=postgres
+        bbdd.systemPassword=syspass
+        bbdd.user=tad
+        bbdd.password=tad
+        org.gradle.jvmargs=-Dfile.encoding=UTF-8
+        org.gradle.daemon=false
+        docker_com.etendoerp.copilot=false
+        docker_com.etendoerp.mainui=false
+        EOF

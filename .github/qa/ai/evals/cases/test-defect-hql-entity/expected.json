@@ -1,0 +1,9 @@
+{
+  "ground_truth": "Test iterates all entities incl. HQL-origin table Aprm_Credit_To_Use, which has no Java class",
+  "expect": {
+    "org.openbravo.test.security.AllDataAllowedOrganizationsTest.testReferencedOrganizations": {
+      "category": "test_defect",
+      "caused_by_change": false
+    }
+  }
+}

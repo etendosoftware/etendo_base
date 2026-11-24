@@ -1,0 +1,73 @@
+name: QA · Canary
+
+# Proves the pipeline can still see bugs. Injects a known bug (the off-by-one from
+# .github/qa/ai/evals/cases/regression-password-offbyone), then requires: the gate goes red, and
+# (when the AI key is set) the triage blames the change. If either fails, the pipeline went blind.
+
+on:
+  schedule:
+    - cron: "0 6 * * 1"   # Mondays 06:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  canary:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      HAS_AI: ${{ secrets.ANTHROPIC_API_KEY != '' }}
+      CASE: .github/qa/ai/evals/cases/regression-password-offbyone
+    services:
+      postgres:
+        image: postgres:16
+        env: { POSTGRES_PASSWORD: syspass, LANG: en_US.utf8 }
+        ports: ["5432:5432"]
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/etendo-env
+        with:
+          github-user: ${{ secrets.ETENDO_GITHUB_USER }}
+          github-token: ${{ secrets.ETENDO_GITHUB_TOKEN }}
+          nexus-user: ${{ secrets.ETENDO_NEXUS_USER }}
+          nexus-password: ${{ secrets.ETENDO_NEXUS_PASSWORD }}
+
+      - name: Build Etendo (expandCore, setup, install)
+        run: |
+          yes Y | ./gradlew expandCore --console=plain
+          ./gradlew setup --console=plain < /dev/null
+          ./gradlew install --console=plain < /dev/null
+
+      - name: Inject the known bug
+        run: patch -p1 --forward -i "$CASE/change.diff"
+
+      - name: Run canary tests (expected to fail)
+        continue-on-error: true
+        run: .github/qa/run-tests.sh .github/qa/suites/canary.txt
+
+      - name: Report
+        run: python3 .github/qa/report.py --title "QA · Canary (bug injected)" --out build/qa build/test-results/test >> "$GITHUB_STEP_SUMMARY"
+
+      - name: AI triage of the injected bug
+        if: env.HAS_AI == 'true'
+        continue-on-error: true
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          npm install -g @anthropic-ai/claude-code
+          .github/qa/ai/triage.sh build/qa/failures.json "$CASE/change.diff" build/qa
+          cat build/qa/triage.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Verdict — did CI and the AI catch it?
+        run: python3 .github/qa/canary-check.py build/qa/failures.json build/qa/triage.json | tee -a "$GITHUB_STEP_SUMMARY"
+
+      - name: Open issue if the pipeline went blind
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh issue create --title "QA canary failed: pipeline did not catch an injected bug" \
+            --body "Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"

@@ -1,0 +1,13 @@
+{
+  "ground_truth": "BaseDataSourceTestDal subclass calls Tomcat over HTTP; no server in a DB-only run",
+  "expect": {
+    "org.openbravo.test.security.ExplicitCrossOrganizationReference.orderLineDSShouldHideNonAccessibleChildren": {
+      "category": "needs_server",
+      "caused_by_change": false
+    },
+    "org.openbravo.test.security.ExplicitCrossOrganizationReference.orderLineDSShouldShowAllChildren": {
+      "category": "needs_server",
+      "caused_by_change": false
+    }
+  }
+}

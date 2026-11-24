@@ -1,0 +1,12 @@
+{
+  "ground_truth": "JVM default locale es_AR; test hardcodes en_US (passes with -Duser.language=en). Both readings are valid: environment (pin the locale) or test_defect (test depends on machine locale).",
+  "expect": {
+    "org.openbravo.test.system.JSONSerialization.serializeProcessContext": {
+      "category": [
+        "environment",
+        "test_defect"
+      ],
+      "caused_by_change": false
+    }
+  }
+}

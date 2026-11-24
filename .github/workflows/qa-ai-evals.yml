@@ -1,0 +1,53 @@
+name: QA · AI triage evals
+
+# Guards the AI triage agent itself: any change to its prompt, schema or scripts must keep the
+# eval pass rate on cases with verified ground truth (see .github/qa/ai/evals/cases).
+
+on:
+  pull_request:
+    paths: [".github/qa/ai/**"]
+  workflow_dispatch:
+    inputs:
+      trials:
+        description: Trials per case (k)
+        default: "3"
+
+concurrency:
+  group: qa-ai-evals-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  evals:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/etendo-env
+        with:
+          github-user: ${{ secrets.ETENDO_GITHUB_USER }}
+          github-token: ${{ secrets.ETENDO_GITHUB_TOKEN }}
+          nexus-user: ${{ secrets.ETENDO_NEXUS_USER }}
+          nexus-password: ${{ secrets.ETENDO_NEXUS_PASSWORD }}
+
+      - name: Expand Etendo sources (no DB needed)
+        run: yes Y | ./gradlew expandCore --console=plain
+
+      - name: Run evals
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          npm install -g @anthropic-ai/claude-code
+          .github/qa/ai/evals/run-evals.py -k "${{ inputs.trials || '3' }}" --min-pass-rate 0.8
+
+      - name: Summary
+        if: always()
+        run: cat build/qa-evals/evals.md >> "$GITHUB_STEP_SUMMARY" || true
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: qa-ai-evals
+          path: build/qa-evals/

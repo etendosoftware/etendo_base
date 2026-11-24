@@ -1,0 +1,18 @@
+{
+  "ground_truth": "Diff changes >= to > in PasswordStrengthChecker.isStrongPassword",
+  "expect": {
+    "org.openbravo.test.security.PasswordStrengthCheckerTest.uppercaseDigitsAndSpecialCharactersShouldBeAccepted": {
+      "category": "regression",
+      "caused_by_change": true
+    },
+    "org.openbravo.test.security.PasswordStrengthCheckerTest.uppercaseLowercaseAndDigitsShouldBeAccepted": {
+      "category": "regression",
+      "caused_by_change": true
+    },
+    "org.openbravo.test.security.PasswordStrengthCheckerTest.uppercaseLowercaseAndSpecialCharactersShouldBeAccepted": {
+      "category": "regression",
+      "caused_by_change": true
+    }
+  },
+  "apply_diff": true
+}

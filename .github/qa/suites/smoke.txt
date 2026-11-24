@@ -1,0 +1,18 @@
+# Smoke suite: fast, DB-only tests (no Tomcat required).
+# One Gradle --tests pattern per line. Lines starting with # are ignored.
+org.openbravo.test.dal.AdminContextTest
+org.openbravo.test.dal.DalQueryTest
+org.openbravo.test.dal.DalTest
+org.openbravo.test.dal.DalUtilTest
+org.openbravo.test.dal.OBContextTest
+org.openbravo.test.dal.SimpleDalReadTest
+org.openbravo.test.security.AccessLevelTest
+org.openbravo.test.security.AllowedOrganizationsTest
+org.openbravo.test.security.BypassAccessLevelCheck
+org.openbravo.test.security.CrossOrganizationUI
+org.openbravo.test.security.CrossOrganizationUICDI
+org.openbravo.test.security.EntityAccessTest
+org.openbravo.test.security.OBContextCollectionsTest
+org.openbravo.test.security.PasswordStrengthCheckerTest
+org.openbravo.test.security.StandardCrossOrganizationReference
+org.openbravo.test.security.WritableReadableOrganizationClientTest

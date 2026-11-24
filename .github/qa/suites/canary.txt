@@ -1,0 +1,2 @@
+# Canary: the test that must catch the known mutation (ai/evals/cases/regression-password-offbyone).
+org.openbravo.test.security.PasswordStrengthCheckerTest

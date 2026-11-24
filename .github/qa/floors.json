@@ -1,0 +1,5 @@
+{
+  "_comment": "Minimum test counts per suite, measured on a clean install (2026-11-24). The gate fails below them, so a suite cannot get faster by losing tests. Raise them when tests are added.",
+  "smoke": 154,
+  "regression": 4788
+}

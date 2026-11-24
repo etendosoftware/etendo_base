@@ -1,0 +1,7 @@
+# Quarantine: tests that fail on a clean Etendo install (not caused by the change under test).
+# They still run, but report.py does not gate on them, and it flags them when they start passing.
+# Format: <Class or Class.method pattern, * wildcard>  # <verified cause> | <first seen YYYY-MM-DD>
+org.openbravo.test.security.AllDataAllowedOrganizationsTest  # test defect: iterates all entities incl. HQL-origin table Aprm_Credit_To_Use (no Java class) -> NPE | 2026-11-24
+org.openbravo.test.model.ClassLoaderTest.modelClassesShould*  # module com.etendoerp.metadata (platform.extensions): AD_Model_Object servlets com.etendoerp.metadata.http.* missing / not Servlet | 2026-11-24
+org.openbravo.test.model.RuntimeModelTest.testIdentifiers  # module com.etendoerp.metadata: table etmeta_widget_class_access has no identifier column | 2026-11-24
+org.openbravo.test.model.RuntimeModelTest.testIsParent4  # 2 isParent TABLEDIR columns not ending in _ID (likely com.etendoerp.metadata, column names only logged at debug) | 2026-11-24

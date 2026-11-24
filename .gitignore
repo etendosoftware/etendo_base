@@ -11,3 +11,7 @@
 !.run/**
 !.github
 !.github/**
+!CLAUDE.md
+!.claude
+!.claude/**
+.claude/settings.local.json

@@ -1,0 +1,32 @@
+name: Etendo restore
+description: Restore the prebuilt workspace and DB snapshot produced by the regression build job.
+inputs:
+  pg-container:
+    description: Service container id (job.services.postgres.id)
+    required: true
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-java@v4
+      with:
+        distribution: temurin
+        java-version: "17"
+
+    - name: Pin JVM locale (tests assert English texts)
+      shell: bash
+      run: echo "JAVA_TOOL_OPTIONS=-Duser.language=en -Duser.country=US" >> "$GITHUB_ENV"
+
+    - uses: actions/download-artifact@v4
+      with:
+        name: etendo-build
+        path: ${{ runner.temp }}/etendo-build
+
+    - name: Restore workspace + DB snapshot
+      shell: bash
+      env:
+        PG: docker exec -i ${{ inputs.pg-container }}
+      run: |
+        zstd -dc "$RUNNER_TEMP/etendo-build/workspace.tar.zst" | tar -xf -
+        $PG psql -U postgres -c "CREATE ROLE tad LOGIN PASSWORD 'tad'"
+        $PG createdb -U postgres -O tad etendo
+        $PG pg_restore -U postgres -d etendo --exit-on-error < "$RUNNER_TEMP/etendo-build/etendo.dump"
